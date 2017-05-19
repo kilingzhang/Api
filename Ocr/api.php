@@ -51,7 +51,6 @@ function minimime($fname)
     $fh = fopen($fname, 'rb');
     if ($fh) {
         $bytes6 = fread($fh, 6);
-        echo $bytes6 . "<br>";
         fclose($fh);
         if ($bytes6 === false) return false;
         if (substr($bytes6, 0, 3) == "\xff\xd8\xff") return false;
