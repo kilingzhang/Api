@@ -15,8 +15,8 @@
 class VerifyHash
 {
   private $staticSecrets = array(
-    'sky31' => '5d8e6f9103d846c149e6c0a87bc7716c',
-    'test' => 'test'
+    'sky31' => '',
+    'test' => ''
   );
   private $role;
   private $hash;
