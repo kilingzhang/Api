@@ -40,9 +40,8 @@ function tempDownload($url)
         return $r;
     }
 
-    $file = curl_file_get_contents($url);
+    $file = file_get_contents($url);
     return _saveFile(md5(time()) . '.jpg', $file);
-
 }
 
 
@@ -52,10 +51,18 @@ function minimime($fname)
     if ($fh) {
         $bytes6 = fread($fh, 6);
         fclose($fh);
-        if ($bytes6 === false) return false;
-        if (substr($bytes6, 0, 3) == "\xff\xd8\xff") return false;
-        if ($bytes6 == "\x89PNG\x0d\x0a") return true;
-        if ($bytes6 == "GIF87a" || $bytes6 == "GIF89a") return false;
+        if ($bytes6 === false) {
+            return false;
+        }
+        if (substr($bytes6, 0, 3) == "\xff\xd8\xff") {
+            return false;
+        }
+        if ($bytes6 == "\x89PNG\x0d\x0a") {
+            return true;
+        }
+        if ($bytes6 == "GIF87a" || $bytes6 == "GIF89a") {
+            return false;
+        }
         return false;
     }
     return false;
@@ -79,7 +86,6 @@ function png2jpg($srcPathName, $delOri = false)
         imagejpeg($dstImage, $srcFile, 90);
         imagedestroy($srcImage);
     }
-
 }
 
 function foreUpload($filePath)
@@ -92,7 +98,9 @@ function foreUpload($filePath)
         $filePath = tempDownload($filePath);
     }
     png2jpg($filePath);
-    if (!file_exists($filePath)) die('{"success": -1}');
+    if (!file_exists($filePath)) {
+        die('{"success": -1}');
+    }
     $url = 'http://ocr.shouji.sogou.com/v2/ocr/json';
     $data = array('pic' => new CURLFile(realpath($filePath)));
 
@@ -100,13 +108,13 @@ function foreUpload($filePath)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, 1);
+    $headers = array(
+        'multipart/form-data;boundary=5cb7c439-7b71-4c07-b997-7f74b01958b7'
+    );
+    curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);    //开启后从浏览器输出，curl_exec()方法没有返回值
     $result = curl_exec($ch);
     curl_close($ch);
     echo $result;
 }
-
-
-
-
